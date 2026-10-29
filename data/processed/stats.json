@@ -1,0 +1,32 @@
+{
+  "filas_originales": 1258435,
+  "con_texto": 755066,
+  "por_clase_con_texto": {
+    "positivo": 599674,
+    "neutro": 90142,
+    "negativo": 65250
+  },
+  "con_3_o_mas_palabras": 588340,
+  "textos_contradictorios_quitados": 2715,
+  "sin_duplicados": 537838,
+  "disponibles_por_clase": {
+    "positivo": 415597,
+    "neutro": 67820,
+    "negativo": 54421
+  },
+  "n_por_clase": 20000,
+  "min_palabras": 3,
+  "semilla": 42,
+  "train": 48000,
+  "test": 12000,
+  "train_por_clase": {
+    "positivo": 16000,
+    "neutro": 16000,
+    "negativo": 16000
+  },
+  "test_por_clase": {
+    "neutro": 4000,
+    "negativo": 4000,
+    "positivo": 4000
+  }
+}
