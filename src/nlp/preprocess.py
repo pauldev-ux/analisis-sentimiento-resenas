@@ -19,6 +19,7 @@ def quitar_tildes(texto: str) -> str:
     return sin_tildes.replace("\0", "ñ")
 
 
+
 def normalizar(texto: str) -> str:
     texto = texto.lower()
     texto = URL.sub(" ", texto)
@@ -26,6 +27,14 @@ def normalizar(texto: str) -> str:
     texto = NO_LETRAS.sub(" ", texto)          # números, signos, emojis
     texto = REPETIDAS.sub(r"\1\1", texto)      # "buenazooo" -> "buenazoo"
     return ESPACIOS.sub(" ", texto).strip()
+
+
+
+def tokenizar(texto: str) -> list[str]:
+    """Separa el texto normalizado en palabras."""
+    return texto.split()
+
+
 
 
 if __name__ == "__main__":
@@ -36,3 +45,9 @@ if __name__ == "__main__":
     ]
     for t in ejemplos:
         print(f"Original:    {t}\nNormalizado: {normalizar(t)}\n")
+
+    
+    
+    n = normalizar(t)
+    print(f"Original:    {t}\nNormalizado: {n}\nTokens:      {tokenizar(n)}\n")
+
