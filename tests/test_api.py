@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_health():
     r = client.get("/health")
     assert r.status_code == 200
-    assert r.json() == {"status": "ok"}
+    assert r.json()["status"] == "ok"
 
 
 # Verifica que /preprocess normalice, conserve el "no" y quite stop words
@@ -48,5 +48,16 @@ def test_rechaza_formato_incorrecto():
     assert client.post("/preprocess", json={"texto": 123}).status_code == 422
     assert client.post("/preprocess", json={"mensaje": "hola"}).status_code == 422
 
+# Verifica que /predict devuelva una clase válida y probabilidades que suman 1
+def test_predict_devuelve_clase_y_probabilidad():
+    r = client.post("/predict", json={"texto": "La comida estuvo excelente"})
+    assert r.status_code == 200
+    datos = r.json()
+    assert datos["clase"] in ["negativo", "neutro", "positivo"]
+    assert 0 <= datos["probabilidad"] <= 1
+    assert abs(sum(datos["probabilidades"].values()) - 1) < 0.01
 
-    
+
+# Verifica que /predict también valide la entrada
+def test_predict_rechaza_texto_vacio():
+    assert client.post("/predict", json={"texto": ""}).status_code == 422

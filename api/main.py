@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
+from api.modelo import TIPO_MODELO, predecir
 
 # Funciones de NLP reutilizadas (la API no reimplementa el preprocesamiento)
 from src.nlp.preprocess import STOP_WORDS, normalizar, quitar_stop_words, tokenizar
@@ -55,10 +56,10 @@ async def error_validacion(request: Request, exc: RequestValidationError):
     return JSONResponse(status_code=422, content={"detalle": errores})
 
 
-# GET /health: indica si la API está funcionando
+# GET /health: indica si la API está funcionando y qué modelo tiene cargado
 @app.get("/health", tags=["estado"])
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "modelo": TIPO_MODELO}
 
 
 # POST /preprocess: devuelve el texto en cada paso del NLP (para la vista paso a paso)
@@ -74,3 +75,9 @@ def preprocess(entrada: TextoEntrada):
         "stop_words_eliminadas": [t for t in tokens if t in STOP_WORDS],
         "sin_stop_words": sin_stop,
     }
+
+
+# POST /predict: clasifica una reseña y devuelve la clase con su probabilidad
+@app.post("/predict", tags=["modelo"])
+def predict(entrada: TextoEntrada):
+    return {"texto": entrada.texto, **predecir([entrada.texto])[0], "modelo": TIPO_MODELO}
