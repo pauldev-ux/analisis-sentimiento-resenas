@@ -7,6 +7,7 @@ import unicodedata
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
+from nltk.util import ngrams
 
 URL = re.compile(r"https?://\S+|www\.\S+")
 NO_LETRAS = re.compile(r"[^a-zñ\s]")        # todo lo que no sea letra o espacio
@@ -91,6 +92,18 @@ def aplicar_lemmatizacion(tokens: list[str], nlp=None) -> list[str]:
     return [t.lemma_ for t in nlp(" ".join(tokens)) if not t.is_space]
 
 
+def generar_bigramas(tokens: list[str]) -> list[str]:
+    return ["_".join(par) for par in ngrams(tokens, 2)]
+
+
+def aplicar_unigramas(tokens: list[str]) -> list[str]:
+    return tokens
+
+
+def aplicar_unigramas_bigramas(tokens: list[str]) -> list[str]:
+    return tokens + generar_bigramas(tokens)
+
+
 if __name__ == "__main__":
     ejemplos = [
         "¡¡La comida estuvo RIQUÍSIMAAA!! 10/10, volveré ",
@@ -103,4 +116,6 @@ if __name__ == "__main__":
         print(f"Original:    {t}\nNormalizado: {n}\nTokens:      {tokens}")
         sin_stop = quitar_stop_words(tokens)
         print(f"Sin stop:    {sin_stop}")
-        print(f"Stemming:    {aplicar_stemming(sin_stop)}\n")
+        stem = aplicar_stemming(sin_stop)
+        print(f"Stemming:    {stem}")
+        print(f"Uni+bigramas: {aplicar_unigramas_bigramas(stem)}\n")
