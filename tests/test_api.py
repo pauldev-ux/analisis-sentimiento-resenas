@@ -85,3 +85,15 @@ def test_batch_csv():
 def test_batch_rechaza_formato():
     r = client.post("/predict/batch", files={"archivo": ("resenas.pdf", b"hola", "application/pdf")})
     assert r.status_code == 400
+
+
+# Verifica que /metrics devuelva las métricas de ambos modelos con su matriz de confusión
+def test_metrics():
+    r = client.get("/metrics")
+    assert r.status_code == 200
+    datos = r.json()
+    assert datos["modelo_en_produccion"] in datos["modelos"]
+    for metricas in datos["modelos"].values():
+        assert 0 <= metricas["f1_macro"] <= 1
+        assert len(metricas["matriz_confusion"]) == 3
+
