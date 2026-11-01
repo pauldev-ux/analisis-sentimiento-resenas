@@ -6,6 +6,7 @@ import unicodedata
 
 import nltk
 from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
 
 URL = re.compile(r"https?://\S+|www\.\S+")
 NO_LETRAS = re.compile(r"[^a-zñ\s]")        # todo lo que no sea letra o espacio
@@ -57,6 +58,39 @@ def quitar_stop_words(tokens: list[str]) -> list[str]:
     return [t for t in tokens if t not in STOP_WORDS]
 
 
+STEMMER = SnowballStemmer("spanish")
+
+
+def aplicar_stemming(tokens: list[str]) -> list[str]:
+    return [STEMMER.stem(t) for t in tokens]
+
+
+_NLP = None
+
+
+def get_nlp():
+    """Carga spaCy en español una sola vez (sin parser ni NER)."""
+    global _NLP
+    if _NLP is None:
+        import spacy
+
+        try:
+            _NLP = spacy.load("es_core_news_sm", disable=["parser", "ner"])
+        except OSError as e:
+            raise OSError(
+                "Falta el modelo spaCy 'es_core_news_sm'. "
+                "Instálalo con: python -m spacy download es_core_news_sm"
+            ) from e
+    return _NLP
+
+
+def aplicar_lemmatizacion(tokens: list[str], nlp=None) -> list[str]:
+    if not tokens:
+        return []
+    nlp = nlp or get_nlp()
+    return [t.lemma_ for t in nlp(" ".join(tokens)) if not t.is_space]
+
+
 if __name__ == "__main__":
     ejemplos = [
         "¡¡La comida estuvo RIQUÍSIMAAA!! 10/10, volveré ",
@@ -67,4 +101,6 @@ if __name__ == "__main__":
         n = normalizar(t)
         tokens = tokenizar(n)
         print(f"Original:    {t}\nNormalizado: {n}\nTokens:      {tokens}")
-        print(f"Sin stop:    {quitar_stop_words(tokens)}\n")
+        sin_stop = quitar_stop_words(tokens)
+        print(f"Sin stop:    {sin_stop}")
+        print(f"Stemming:    {aplicar_stemming(sin_stop)}\n")
