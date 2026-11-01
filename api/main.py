@@ -1,4 +1,8 @@
-from fastapi import FastAPI, Request
+import csv
+import io
+from collections import Counter
+
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
@@ -9,6 +13,9 @@ from src.nlp.preprocess import STOP_WORDS, normalizar, quitar_stop_words, tokeni
 
 # Límite de caracteres por reseña
 MAX_CARACTERES = 2000
+# Límite de reseñas por archivo en /predict/batch
+MAX_RESENAS_ARCHIVO = 500
+
 
 # Crea la aplicación; título y descripción aparecen en /docs
 app = FastAPI(
@@ -81,3 +88,43 @@ def preprocess(entrada: TextoEntrada):
 @app.post("/predict", tags=["modelo"])
 def predict(entrada: TextoEntrada):
     return {"texto": entrada.texto, **predecir([entrada.texto])[0], "modelo": TIPO_MODELO}
+
+
+
+# Lee un .txt (una reseña por línea) o un .csv (columna "texto" o la primera) y devuelve las reseñas
+def leer_archivo(nombre: str, contenido: bytes) -> list[str]:
+    try:
+        texto = contenido.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        raise HTTPException(400, "el archivo debe estar en UTF-8")
+    if nombre.lower().endswith(".txt"):
+        filas = texto.splitlines()
+    elif nombre.lower().endswith(".csv"):
+        lector = csv.DictReader(io.StringIO(texto))
+        if not lector.fieldnames:
+            raise HTTPException(400, "el CSV está vacío")
+        columna = "texto" if "texto" in lector.fieldnames else lector.fieldnames[0]
+        filas = [fila[columna] or "" for fila in lector]
+    else:
+        raise HTTPException(400, "formato no soportado: usa .txt o .csv")
+    return [f.strip() for f in filas if f.strip()]
+
+
+# POST /predict/batch: clasifica varias reseñas subidas en un archivo .txt o .csv
+@app.post("/predict/batch", tags=["modelo"])
+async def predict_batch(archivo: UploadFile = File(..., description="Archivo .txt o .csv con reseñas")):
+    resenas = leer_archivo(archivo.filename or "", await archivo.read())
+    if not resenas:
+        raise HTTPException(400, "el archivo no tiene reseñas")
+    if len(resenas) > MAX_RESENAS_ARCHIVO:
+        raise HTTPException(400, f"máximo {MAX_RESENAS_ARCHIVO} reseñas por archivo")
+    # Se descartan las líneas que no tienen ninguna palabra
+    validas = [r[:MAX_CARACTERES] for r in resenas if normalizar(r)]
+    resultados = [{"texto": t, **p} for t, p in zip(validas, predecir(validas))]
+    return {
+        "total": len(resultados),
+        "descartadas": len(resenas) - len(validas),
+        "resumen": dict(Counter(r["clase"] for r in resultados)),
+        "resultados": resultados,
+        "modelo": TIPO_MODELO,
+    }

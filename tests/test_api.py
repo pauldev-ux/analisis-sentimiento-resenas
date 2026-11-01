@@ -61,3 +61,27 @@ def test_predict_devuelve_clase_y_probabilidad():
 # Verifica que /predict también valide la entrada
 def test_predict_rechaza_texto_vacio():
     assert client.post("/predict", json={"texto": ""}).status_code == 422
+
+
+# Verifica que /predict/batch clasifique un .txt con una reseña por línea
+def test_batch_txt():
+    contenido = "Excelente comida\nPésimo servicio\n\n10/10\n".encode("utf-8")
+    r = client.post("/predict/batch", files={"archivo": ("resenas.txt", contenido, "text/plain")})
+    assert r.status_code == 200
+    datos = r.json()
+    assert datos["total"] == 2          # la línea vacía se ignora
+    assert datos["descartadas"] == 1    # "10/10" no tiene palabras
+
+
+# Verifica que /predict/batch lea un .csv usando la columna "texto"
+def test_batch_csv():
+    contenido = "id,texto\n1,Muy rico todo\n2,No me gustó\n".encode("utf-8")
+    r = client.post("/predict/batch", files={"archivo": ("resenas.csv", contenido, "text/csv")})
+    assert r.status_code == 200
+    assert r.json()["total"] == 2
+
+
+# Verifica que se rechacen formatos no soportados
+def test_batch_rechaza_formato():
+    r = client.post("/predict/batch", files={"archivo": ("resenas.pdf", b"hola", "application/pdf")})
+    assert r.status_code == 400
