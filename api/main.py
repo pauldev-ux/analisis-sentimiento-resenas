@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
-from api.modelo import TIPO_MODELO, predecir
+from api.modelo import TIPO_MODELO, cargar_metricas, predecir
 
 # Funciones de NLP reutilizadas (la API no reimplementa el preprocesamiento)
 from src.nlp.preprocess import STOP_WORDS, normalizar, quitar_stop_words, tokenizar
@@ -128,3 +128,10 @@ async def predict_batch(archivo: UploadFile = File(..., description="Archivo .tx
         "resultados": resultados,
         "modelo": TIPO_MODELO,
     }
+
+
+# GET /metrics: devuelve las métricas de los modelos y su comparación
+@app.get("/metrics", tags=["modelo"])
+def metrics():
+    return cargar_metricas()
+
