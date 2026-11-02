@@ -8,6 +8,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from nltk.util import ngrams
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 URL = re.compile(r"https?://\S+|www\.\S+")
 NO_LETRAS = re.compile(r"[^a-zñ\s]")        # todo lo que no sea letra o espacio
@@ -104,6 +105,24 @@ def aplicar_unigramas_bigramas(tokens: list[str]) -> list[str]:
     return tokens + generar_bigramas(tokens)
 
 
+def tfidf(min_df, max_df, max_features=None):
+    """TF-IDF con unigramas: los bigramas ya vienen unidos con '_' en el texto.
+    min_df, max_df (y max_features) se reciben desde quien llama (train/main).
+    """
+    return TfidfVectorizer(
+        ngram_range=(1, 1),
+        min_df=min_df,
+        max_df=max_df,
+        max_features=max_features,
+    )
+
+
+def preparar_documento(texto: str) -> str:
+    """Normalizar → tokenizar → stop words → stemming → uni+bigramas."""
+    tokens = aplicar_stemming(quitar_stop_words(tokenizar(normalizar(texto))))
+    return " ".join(aplicar_unigramas_bigramas(tokens))
+
+
 if __name__ == "__main__":
     ejemplos = [
         "¡¡La comida estuvo RIQUÍSIMAAA!! 10/10, volveré ",
@@ -118,4 +137,4 @@ if __name__ == "__main__":
         print(f"Sin stop:    {sin_stop}")
         stem = aplicar_stemming(sin_stop)
         print(f"Stemming:    {stem}")
-        print(f"Uni+bigramas: {aplicar_unigramas_bigramas(stem)}\n")
+        print(f"Uni+bigramas: {' '.join(aplicar_unigramas_bigramas(stem))}\n")
