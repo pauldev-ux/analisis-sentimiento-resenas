@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { obtenerEstado } from './api'
 import AnalisisTexto from './components/AnalisisTexto'
 import AnalisisArchivo from './components/AnalisisArchivo'
+import Restaurantes from './components/Restaurantes'
 
 // Pestañas de la aplicación
 const PESTANAS = [
   { id: 'texto', nombre: 'Analizar reseña', componente: AnalisisTexto },
   { id: 'archivo', nombre: 'Subir archivo', componente: AnalisisArchivo },
+  { id: 'restaurantes', nombre: 'Restaurantes', componente: Restaurantes },
 ]
 
 export default function App() {
