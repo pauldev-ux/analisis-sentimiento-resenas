@@ -123,6 +123,11 @@ def preparar_documento(texto: str) -> str:
     return " ".join(aplicar_unigramas_bigramas(tokens))
 
 
+def preparar_lote(textos):
+    """Aplica preparar_documento a cada texto (paso 'prep' del pipeline)."""
+    return [preparar_documento(t) for t in textos]
+
+
 if __name__ == "__main__":
     ejemplos = [
         "¡¡La comida estuvo RIQUÍSIMAAA!! 10/10, volveré ",
