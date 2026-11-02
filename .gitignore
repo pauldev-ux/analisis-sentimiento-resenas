@@ -1,6 +1,10 @@
 # Dataset original (159 MB, supera el límite de GitHub)
 data/raw/
 
+# Artefactos de entrenamiento (se regeneran con python -m src.models.train)
+models/*.joblib
+models/metricas.json
+
 # Python
 __pycache__/
 .venv/
