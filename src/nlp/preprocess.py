@@ -122,6 +122,12 @@ def preparar_documento(texto: str) -> str:
     tokens = aplicar_stemming(quitar_stop_words(tokenizar(normalizar(texto))))
     return " ".join(aplicar_unigramas_bigramas(tokens))
 
+# Aplica preparar_documento a una lista de textos (se usa dentro del pipeline del modelo)
+def preparar_documentos(textos) -> list[str]:
+    return [preparar_documento(t) for t in textos]
+
+
+
 
 if __name__ == "__main__":
     ejemplos = [
