@@ -3,12 +3,14 @@ import { obtenerEstado } from './api'
 import AnalisisTexto from './components/AnalisisTexto'
 import AnalisisArchivo from './components/AnalisisArchivo'
 import Restaurantes from './components/Restaurantes'
+import Metricas from './components/Metricas'
 
 // Pestañas de la aplicación
 const PESTANAS = [
+  { id: 'restaurantes', nombre: 'Restaurantes', componente: Restaurantes },
   { id: 'texto', nombre: 'Analizar reseña', componente: AnalisisTexto },
   { id: 'archivo', nombre: 'Subir archivo', componente: AnalisisArchivo },
-  { id: 'restaurantes', nombre: 'Restaurantes', componente: Restaurantes },
+  { id: 'metricas', nombre: 'Métricas del modelo', componente: Metricas },
 ]
 
 export default function App() {
