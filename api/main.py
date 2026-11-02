@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 from api.modelo import TIPO_MODELO, cargar_metricas, predecir
+from api.restaurantes import router as router_restaurantes
 
 # Funciones de NLP reutilizadas (la API no reimplementa el preprocesamiento)
 from src.nlp.preprocess import STOP_WORDS, normalizar, quitar_stop_words, tokenizar
@@ -24,6 +25,9 @@ app = FastAPI(
     version="0.1.0",
 )
 
+
+# Endpoints de restaurantes (definidos en api/restaurantes.py)
+app.include_router(router_restaurantes)
 
 # Define el JSON que recibe la API: {"texto": "..."}, obligatorio y con largo máximo
 class TextoEntrada(BaseModel):
