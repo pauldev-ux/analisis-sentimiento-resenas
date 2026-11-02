@@ -27,6 +27,12 @@ RAW = RAIZ / "data" / "raw" / "reviews.csv"
 OUT = RAIZ / "data" / "processed"
 
 SEMILLA = 42
+
+# Valores por defecto de la preparación (también los usa src/models/train.py)
+N_POR_CLASE = 20_000
+MIN_PALABRAS = 3
+TEST_SIZE = 0.2
+
 # 1-2★ = negativo, 3★ = neutro, 4-5★ = positivo
 MAPA_ETIQUETAS = {1: "negativo", 2: "negativo", 3: "neutro", 4: "positivo", 5: "positivo"}
 
@@ -96,8 +102,8 @@ def preparar(n_por_clase: int, min_palabras: int, test_size: float) -> dict:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Limpia, balancea y divide el dataset.")
-    p.add_argument("--n-por-clase", type=int, default=20_000)
-    p.add_argument("--min-palabras", type=int, default=3)
-    p.add_argument("--test-size", type=float, default=0.2)
+    p.add_argument("--n-por-clase", type=int, default=N_POR_CLASE)
+    p.add_argument("--min-palabras", type=int, default=MIN_PALABRAS)
+    p.add_argument("--test-size", type=float, default=TEST_SIZE)
     a = p.parse_args()
     print(json.dumps(preparar(a.n_por_clase, a.min_palabras, a.test_size), indent=2, ensure_ascii=False))
