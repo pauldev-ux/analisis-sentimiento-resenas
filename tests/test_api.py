@@ -97,3 +97,34 @@ def test_metrics():
         assert 0 <= metricas["f1_macro"] <= 1
         assert len(metricas["matriz_confusion"]) == 3
 
+
+
+# Verifica que /restaurantes liste restaurantes con su resumen de sentimiento
+def test_listar_restaurantes():
+    r = client.get("/restaurantes")
+    assert r.status_code == 200
+    datos = r.json()
+    assert datos["total"] > 0
+    primero = datos["restaurantes"][0]
+    assert "resenas" not in primero
+    assert abs(sum(primero["sentimiento"].values()) - 1) < 0.01
+
+
+# Verifica el filtro por distrito
+def test_filtrar_por_distrito():
+    distrito = client.get("/restaurantes/distritos").json()[0]
+    datos = client.get("/restaurantes", params={"distrito": distrito}).json()
+    assert all(r["distrito"] == distrito for r in datos["restaurantes"])
+
+
+# Verifica que el detalle traiga las reseñas con su sentimiento
+def test_detalle_restaurante():
+    id_restaurante = client.get("/restaurantes").json()["restaurantes"][0]["id"]
+    datos = client.get(f"/restaurantes/{id_restaurante}").json()
+    assert len(datos["resenas"]) > 0
+    assert datos["resenas"][0]["sentimiento"] in ["negativo", "neutro", "positivo"]
+
+
+# Verifica que un id inexistente devuelva 404
+def test_restaurante_inexistente():
+    assert client.get("/restaurantes/1").status_code == 404
