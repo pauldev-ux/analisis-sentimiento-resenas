@@ -1,7 +1,7 @@
 # Informe técnico – Análisis de sentimiento de reseñas de restaurantes
 
 **Materia:** Tópicos y Programación Avanzada – UAGRM
-**Integrantes:** Paul Montenegro, Nataly Condori, _completar_, _completar_
+**Integrantes:** Paul Moreno Montenegro, Nataly Condori Verbo
 
 ## 1. Problema y objetivo
 
@@ -20,7 +20,7 @@ Se usó **Peruvian Food Reviews** (Kaggle, autor `lazaro97`): reseñas de restau
 | Origen | https://www.kaggle.com/datasets/lazaro97/peruvian-food-reviews |
 | Tamaño | `reviews.csv`, 159 MB, 1 258 435 filas y 9 871 restaurantes |
 | Columnas usadas | Texto en `review`, estrellas (1 a 5) en `score`, restaurante en `service` |
-| Licencia y fecha de descarga | _Pendiente: copiarlas de la ficha del dataset en Kaggle_ |
+| Licencia y fecha de descarga | No especificada en Kaggle; uso académico. Descargado el 28/10/2026 |
 
 El CSV no se sube al repositorio. `data/raw/` está en `.gitignore`.
 
