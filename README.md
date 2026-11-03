@@ -13,7 +13,7 @@ Clasifica reseñas de restaurantes en español como **negativo / neutro / positi
 |---|---|
 | Nombre | Peruvian Food Reviews |
 | Origen | Kaggle (autor: `lazaro97`): https://www.kaggle.com/datasets/lazaro97/peruvian-food-reviews |
-| Licencia | _Completar con la licencia que indica la página del dataset en Kaggle_ |
+| Licencia | No especificada en Kaggle; uso académico|
 | Fecha de obtención | 28/10/2026 |
 | Tamaño | `reviews.csv`, 159 MB (1 258 435 filas) y `restaurants.csv`, 1,5 MB |
 
