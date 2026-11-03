@@ -10,7 +10,14 @@ from api.modelo import TIPO_MODELO, cargar_metricas, predecir
 from api.restaurantes import router as router_restaurantes
 
 # Funciones de NLP reutilizadas (la API no reimplementa el preprocesamiento)
-from src.nlp.preprocess import STOP_WORDS, normalizar, quitar_stop_words, tokenizar
+from src.nlp.preprocess import (
+    STOP_WORDS,
+    aplicar_stemming,
+    aplicar_unigramas_bigramas,
+    normalizar,
+    quitar_stop_words,
+    tokenizar,
+)
 
 # Límite de caracteres por reseña
 MAX_CARACTERES = 2000
@@ -79,12 +86,15 @@ def preprocess(entrada: TextoEntrada):
     normalizado = normalizar(entrada.texto)
     tokens = tokenizar(normalizado)
     sin_stop = quitar_stop_words(tokens)
+    raices = aplicar_stemming(sin_stop)
     return {
         "original": entrada.texto,
         "normalizado": normalizado,
         "tokens": tokens,
         "stop_words_eliminadas": [t for t in tokens if t in STOP_WORDS],
         "sin_stop_words": sin_stop,
+        "raices": raices,
+        "uni_bigramas": aplicar_unigramas_bigramas(raices),
     }
 
 

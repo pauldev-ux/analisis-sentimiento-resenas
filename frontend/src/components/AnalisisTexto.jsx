@@ -83,7 +83,8 @@ function PasoAPaso({ pasos }) {
         <li><b>Tokens</b><Fichas lista={pasos.tokens} /></li>
         <li><b>Stop words eliminadas</b><Fichas lista={pasos.stop_words_eliminadas} tipo="tachada" /></li>
         <li><b>Sin stop words</b><Fichas lista={pasos.sin_stop_words} /></li>
-        {pasos.raices && <li><b>Raíces / lemas</b><Fichas lista={pasos.raices} tipo="resaltada" /></li>}
+        {pasos.raices && <li><b>Raíces (stemming)</b><Fichas lista={pasos.raices} tipo="resaltada" /></li>}
+        {pasos.uni_bigramas && <li><b>Unigramas + bigramas (lo que recibe el modelo)</b><Fichas lista={pasos.uni_bigramas} /></li>}
       </ol>
     </div>
   )
